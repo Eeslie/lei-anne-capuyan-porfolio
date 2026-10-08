@@ -1,7 +1,8 @@
 import { CheckCircle2, Link2, Loader2, Mail, MapPin, Phone, Send } from 'lucide-react'
 import { useState } from 'react'
 import type { FormEvent } from 'react'
-import { CONTACT_AUTORESPONSE, EMAIL, LINKEDIN_URL, LOCATION, PHONE } from '../constants'
+import { EMAIL, LINKEDIN_URL, LOCATION, PHONE } from '../constants'
+import { submitContactForm } from '../lib/submitContact'
 import { DownloadCvButton } from './DownloadCvButton'
 import { Reveal } from './Reveal'
 
@@ -18,40 +19,18 @@ export function Contact() {
     setErrorMessage(null)
     setSenderEmail(null)
 
-    const data = new FormData(e.currentTarget)
+    const form = e.currentTarget
+    const data = new FormData(form)
     const name = String(data.get('name') ?? '')
     const fromEmail = String(data.get('email') ?? '')
     const subject = String(data.get('subject') ?? 'Portfolio inquiry')
     const message = String(data.get('message') ?? '')
 
     try {
-      const res = await fetch(`https://formsubmit.co/ajax/${EMAIL}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Accept: 'application/json',
-        },
-        body: JSON.stringify({
-          name,
-          email: fromEmail,
-          subject,
-          message,
-          _subject: `[Portfolio Contact] ${subject}`,
-          _template: 'table',
-          _captcha: 'false',
-          _autoresponse: CONTACT_AUTORESPONSE,
-        }),
-      })
-
-      const payload = (await res.json()) as { success?: string; message?: string }
-
-      if (!res.ok || payload.success !== 'true') {
-        throw new Error(payload.message ?? 'Unable to send your message right now.')
-      }
-
+      await submitContactForm({ name, email: fromEmail, subject, message })
       setSenderEmail(fromEmail)
       setSubmitState('success')
-      e.currentTarget.reset()
+      form.reset()
     } catch (err) {
       setSubmitState('error')
       setErrorMessage(
@@ -74,8 +53,8 @@ export function Contact() {
               Contact
             </h2>
             <p className="mx-auto mt-3 max-w-xl text-slate-600">
-              Messages are delivered to {EMAIL}. You&apos;ll receive an automatic confirmation email
-              once your inquiry is sent.
+              Messages are delivered to {EMAIL}. You&apos;ll get an automatic confirmation email
+              after sending.
             </p>
           </div>
         </Reveal>
@@ -188,9 +167,16 @@ export function Contact() {
                     </>
                   )}
                 </button>
-                <p className="mt-4 text-xs text-slate-500">
-                  First-time setup: FormSubmit may ask you to confirm {EMAIL} once via email before
-                  deliveries go live.
+                <p className="mt-4 text-xs leading-relaxed text-slate-500">
+                  Powered by FormSubmit. Each website URL activates once: localhost is already active;
+                  for{' '}
+                  <a
+                    href="https://lei-anne-capuyan-porfolio.vercel.app/#contact"
+                    className="text-emerald-700 underline"
+                  >
+                    your live site
+                  </a>
+                  , submit the form there once and click the activation link in your email.
                 </p>
               </form>
             )}
