@@ -1,0 +1,16 @@
+Add your image files here (same names as below):
+
+Hero portrait:
+  public/images/hero.jpg
+  (or hero.webp / hero.png — update HERO_IMAGE in src/constants.ts if needed)
+
+Work experience photos:
+  public/images/jobs/bayleaf-supervisor.jpg
+  public/images/jobs/brittany-ga.jpg
+  public/images/jobs/brittany-jr.jpg
+  public/images/jobs/bayleaf-associate.jpg
+
+Résumé PDF:
+  public/cv.pdf
+
+Until these files exist, the site shows SVG placeholders for images and a hint if CV download is clicked.
